@@ -11,7 +11,12 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${file}"
+            "program": "${workspaceFolder}/index.js",
+            "args": [
+                "start",
+                "--master-address",
+                "127.0.0.1:50001"
+            ]
         }
     ]
 }
