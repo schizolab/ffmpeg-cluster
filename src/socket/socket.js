@@ -21,19 +21,6 @@ export class Socket {
         })
     }
 
-    setNameAsync(name) {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('set name', name, (response) => {
-                if (response.success) {
-                    logger.info(`set name to ${name}`);
-                    resolve();
-                } else {
-                    reject(response.error);
-                }
-            });
-        })
-    }
-
     setProgressAsync({ taskId, action, progressPercentage }) {
         return new Promise((resolve, reject) => {
             this.socket.emit('set progress',
