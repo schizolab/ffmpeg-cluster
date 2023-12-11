@@ -58,7 +58,8 @@ program
 
         // parallel processing
         const iterableTasks = new IterableTasks({ masterAddress, slaveName })
-        // set name in socket
+        await iterableTasks.next()
+
         // socket testing
         logger.info(`trying to connect to master Websocket`)
         const socket = new Socket(masterAddress)
