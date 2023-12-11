@@ -25,7 +25,7 @@ export async function checkMasterStatusAsync(serverAddress) {
 export async function getTaskAsync(serverAddress, { slaveName }) {
     const url = urlJoin(`http://${serverAddress}`, 'task');
 
-    const task = await got(url, {
+    const task = await got.post(url, {
         json: {
             slaveName
         }
