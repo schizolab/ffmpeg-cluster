@@ -4,7 +4,7 @@ const logger = log4js.getLogger()
 import { Command } from "commander";
 const program = new Command()
 
-import { checkMasterStatus, getTask, updateTask } from './src/rest/masterAPI.js'
+import { checkMasterStatusAsync, getTaskAsync, updateTaskAsync } from './src/rest/masterAPI.js'
 import { Socket } from './src/socket/socket.js';
 
 program
@@ -47,7 +47,7 @@ program
         logger.info(`trying to connect to master REST`)
 
         // connect to master
-        const { remainingTasks } = await checkMasterStatus(masterAddress)
+        const { remainingTasks } = await checkMasterStatusAsync(masterAddress)
 
         // set name in socket
         logger.info(`trying to connect to master Websocket`)

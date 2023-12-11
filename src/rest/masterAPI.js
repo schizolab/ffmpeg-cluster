@@ -6,7 +6,7 @@ import got from 'got'
 // use url join to handle slashes safely
 import urlJoin from 'url-join';
 
-export async function checkMasterStatus(serverAddress) {
+export async function checkMasterStatusAsync(serverAddress) {
     const url = urlJoin(`http://${serverAddress}`, '/status');
 
     let status = null;
@@ -30,7 +30,7 @@ export async function checkMasterStatus(serverAddress) {
     return status;
 }
 
-export async function getTask(serverAddress, { slaveName }) {
+export async function getTaskAsync(serverAddress, { slaveName }) {
     const url = urlJoin(`http://${serverAddress}`, 'task');
 
     const task = await got(url, {
@@ -48,7 +48,7 @@ export async function getTask(serverAddress, { slaveName }) {
 }
 
 // status: 'done' | 'failed'
-export async function updateTask(serverAddress, { slaveName, taskId, status }) {
+export async function updateTaskAsync(serverAddress, { slaveName, taskId, status }) {
     const url = urlJoin(`http://${serverAddress}`, `/task/${taskId}`);
 
     const { isUpdated } = await got.put(url, {
