@@ -7,7 +7,7 @@ const program = new Command()
 import { checkMasterStatusAsync, getTaskAsync, updateTaskAsync } from './src/rest/masterAPI.js'
 import { Socket } from './src/socket/socket.js';
 
-import { IterableTasks } from './src/tasking/iterableTasks.js';
+import { pMapIterable } from 'p-map';
 
 program
     .name('ffmpeg cluster')
@@ -58,7 +58,19 @@ program
 
         // parallel processing
         const iterableTasks = new IterableTasks({ masterAddress, slaveName })
-        await iterableTasks.next()
+        await pMapIterable(iterableTasks, async (task) => {
+            const { id, downloadURL, uploadURL, options } = task
+
+            // fetch file from URL
+            // report to socket along the way
+
+            // process with ffmpeg
+            // report to socket along the way
+
+            // upload to URL
+
+            // report task
+        }, { concurrency: threads })
 
         // socket testing
         logger.info(`trying to connect to master Websocket`)
