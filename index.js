@@ -43,12 +43,14 @@ program
         const slaveName = 'temp'
 
         // important for identifying sessions in logs
-        logger.info(`started slave ${slaveName} started with master address: ${masterAddress} and ${threads} threads`)
+        logger.info(`started slave ${slaveName} with ${threads} threads, master address: ${masterAddress}`)
+        logger.info(`trying to connect to master REST`)
 
         // connect to master
         const { remainingTasks } = await checkMasterStatus(masterAddress)
 
         // set name in socket
+        logger.info(`trying to connect to master Websocket`)
         const socket = new Socket(masterAddress)
         await socket.connectAsync()
         await socket.setNameAsync(slaveName)
