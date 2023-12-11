@@ -7,6 +7,8 @@ const program = new Command()
 import { checkMasterStatusAsync, getTaskAsync, updateTaskAsync } from './src/rest/masterAPI.js'
 import { Socket } from './src/socket/socket.js';
 
+import { IterableTasks } from './src/tasking/iterableTasks.js';
+
 program
     .name('ffmpeg cluster')
     .description('The cluster node for transcoding videos to vp9, this needs to connect to the master')
@@ -61,7 +63,8 @@ program
         await socket.setNameAsync(slaveName)
 
         // parallel processing
-
+        const iterableTasks = new IterableTasks({ masterAddress, slaveName })
+        
     })
 
 program.parse()
