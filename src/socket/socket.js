@@ -34,6 +34,7 @@ export class Socket {
                         logger.info(`set progress for task ${taskId}`);
                         resolve();
                     } else {
+                        logger.error(`failed to set progress for task ${taskId}, error:${response.error}`);
                         reject(response.error);
                     }
                 });
