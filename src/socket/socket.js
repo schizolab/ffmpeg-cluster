@@ -34,4 +34,22 @@ export class Socket {
         })
     }
 
+    setProgressAsync({ taskId, action, progressPercentage }) {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('set progress',
+                {
+                    taskId,
+                    action,
+                    progressPercentage
+                },
+                (response) => {
+                    if (response.success) {
+                        logger.info(`set progress for task ${taskId}`);
+                        resolve();
+                    } else {
+                        reject(response.error);
+                    }
+                });
+        });
+    }
 }

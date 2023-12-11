@@ -64,7 +64,14 @@ program
 
         // parallel processing
         const iterableTasks = new IterableTasks({ masterAddress, slaveName })
-        
+
+        // set progress (test)
+        await socket.setProgressAsync({
+            taskId: 1,
+            action: 'download',
+            progressPercentage: 0
+        })
+        logger.info(`test set progress for task 1`)
     })
 
 program.parse()
