@@ -46,7 +46,7 @@ program
         logger.info(`started slave ${slaveName} started with master address: ${masterAddress} and ${threads} threads`)
 
         // connect to master
-        const { remainingTasks } = checkMasterStatus(masterAddress)
+        const { remainingTasks } = await checkMasterStatus(masterAddress)
 
         // set name in socket
         const socket = new Socket(masterAddress)
