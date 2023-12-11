@@ -44,16 +44,24 @@ program
 
         // important for identifying sessions in logs
         logger.info(`started slave ${slaveName} with ${threads} threads, master address: ${masterAddress}`)
-        logger.info(`trying to connect to master REST`)
 
         // connect to master
-        const { remainingTasks } = await checkMasterStatusAsync(masterAddress)
+        try {
+            logger.info(`trying to connect to master REST`)
+            const { remainingTasks } = await checkMasterStatusAsync(masterAddress)
+        } catch (error) {
+            logger.error(`failed to connect to master REST, error:${error}`)
+            return
+        }
 
         // set name in socket
         logger.info(`trying to connect to master Websocket`)
         const socket = new Socket(masterAddress)
         await socket.connectAsync()
         await socket.setNameAsync(slaveName)
+
+        // parallel processing
+
     })
 
 program.parse()

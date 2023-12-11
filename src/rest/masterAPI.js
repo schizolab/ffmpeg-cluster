@@ -9,20 +9,12 @@ import urlJoin from 'url-join';
 export async function checkMasterStatusAsync(serverAddress) {
     const url = urlJoin(`http://${serverAddress}`, '/status');
 
-    let status = null;
-    try {
-        status = await got(url, {
-            timeout: {
-                request: 2000
-            }
-        }).json();
-    } catch (error) {
-        logger.error(`failed to connect to master, error:${error}`);
 
-        return {
-            remainingTasks: 0
+    const status = await got(url, {
+        timeout: {
+            request: 2000
         }
-    }
+    }).json();
 
     const { remainingTasks } = status;
     logger.info(`master status: remainingTasks: ${remainingTasks}`);
