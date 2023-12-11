@@ -9,8 +9,8 @@ program
 
 program
     .command('start')
-    .argument('<master address>', 'The master address')
-    .argument('[threads]', 'How many parallel threads to use for encoding')
+    .option('-m, --master-address <master address>', 'The master address')
+    .option('-t, --threads [threads]', 'How many parallel threads to use for encoding')
     .description('Connect to the master and start processing')
     .action((masterAddress, threads = 4) => {
         // principle of operation
