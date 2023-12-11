@@ -21,7 +21,7 @@
     "commander": "^11.1.0",
     "got": "^14.0.0",
     "log4js": "^6.9.1",
-    "socket.io": "^4.7.2"
+    "socket.io-client": "^4.7.2"
   },
   "type": "module"
 }
