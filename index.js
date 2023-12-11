@@ -56,17 +56,17 @@ program
             return
         }
 
+        // parallel processing
+        const iterableTasks = new IterableTasks({ masterAddress, slaveName })
         // set name in socket
+        // socket testing
         logger.info(`trying to connect to master Websocket`)
         const socket = new Socket(masterAddress)
         await socket.connectAsync()
-        await socket.setNameAsync(slaveName)
 
-        // parallel processing
-        const iterableTasks = new IterableTasks({ masterAddress, slaveName })
-
-        // set progress (test)
+        // set progress
         await socket.setProgressAsync({
+            slaveName,
             taskId: 1,
             action: 'download',
             progressPercentage: 0
