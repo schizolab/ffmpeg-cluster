@@ -1,6 +1,11 @@
-import { Command } from "commander";
+import log4js from './src/logging.js'
+const logger = log4js.getLogger()
 
+import { Command } from "commander";
 const program = new Command()
+
+import { checkMasterStatus, getTask, updateTask } from './src/rest/masterAPI.js'
+import { Socket } from './src/socket/socket.js';
 
 program
     .name('ffmpeg cluster')
@@ -12,7 +17,7 @@ program
     .option('-m, --master-address <master address>', 'The master address')
     .option('-t, --threads [threads]', 'How many parallel threads to use for encoding')
     .description('Connect to the master and start processing')
-    .action((masterAddress, threads = 4) => {
+    .action(async ({ masterAddress, threads = 4 }) => {
         // principle of operation
         {
             // connect to master
@@ -34,6 +39,19 @@ program
                 // report task
             }
         }
+
+        const slaveName = 'temp'
+
+        // important for identifying sessions in logs
+        logger.info(`started slave ${slaveName} started with master address: ${masterAddress} and ${threads} threads`)
+
+        // connect to master
+        const { remainingTasks } = checkMasterStatus(masterAddress)
+
+        // set name in socket
+        const socket = new Socket(masterAddress)
+        await socket.connectAsync()
+        await socket.setNameAsync(slaveName)
     })
 
 program.parse()
