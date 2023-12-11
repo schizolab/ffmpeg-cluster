@@ -17,6 +17,9 @@ dependencies:
   log4js:
     specifier: ^6.9.1
     version: 6.9.1
+  p-map:
+    specifier: ^7.0.0
+    version: 7.0.0
   socket.io-client:
     specifier: ^4.7.2
     version: 4.7.2
@@ -1270,6 +1273,11 @@ packages:
   /p-cancelable@4.0.1:
     resolution: {integrity: sha512-wBowNApzd45EIKdO1LaU+LrMBwAcjfPaYtVzV3lmfM3gf8Z4CHZsiIqlM8TZZ8okYvh5A1cP6gTfCRQtwUpaUg==}
     engines: {node: '>=14.16'}
+    dev: false
+
+  /p-map@7.0.0:
+    resolution: {integrity: sha512-EZl03dLKv3RypkrjlevZoNwQMSy4bAblWcR18zhonktnN4fUs3asFQKSe0awn982omGxamvbejqQKQYDJYHCEg==}
+    engines: {node: '>=18'}
     dev: false
 
   /quick-lru@5.1.1:
