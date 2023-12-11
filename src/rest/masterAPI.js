@@ -31,7 +31,7 @@ export async function checkMasterStatus(serverAddress) {
 }
 
 export async function getTask(serverAddress, { slaveName }) {
-    const url = urlJoin(serverAddress, 'task');
+    const url = urlJoin(`http://${serverAddress}`, 'task');
 
     const task = await got(url, {
         json: {
@@ -47,3 +47,34 @@ export async function getTask(serverAddress, { slaveName }) {
     return task
 }
 
+// status: 'done' | 'failed'
+export async function updateTask(serverAddress, { slaveName, taskId, status }) {
+    const url = urlJoin(`http://${serverAddress}`, `/task/${taskId}`);
+
+    const { isUpdated } = await got.put(url, {
+        json: {
+            slaveName,
+            status
+        },
+        retry: { // since processing take so much effort, we can't just throw it away
+            limit: 5,
+            statusCodes: [ // server errors
+                500,
+            ],
+            errorCodes: [ // network errors
+                'ETIMEDOUT',
+                'ECONNRESET',
+                'EADDRINUSE',
+                'ECONNREFUSED',
+                'EPIPE',
+                'ENOTFOUND',
+                'ENETUNREACH',
+                'EAI_AGAIN'
+            ],
+        }
+    }).json();
+
+    if (status === 'updated task') {
+        logger.info(`updated task id:${taskId}`) // Use taskId instead of id
+    }
+}
