@@ -57,7 +57,7 @@ program
         }
 
         // parallel processing
-        const iterableTasks = new IterableTasks({ masterAddress, slaveName })
+        const iterableTasks = new IterableTask({ masterAddress, slaveName })
         await pMapIterable(iterableTasks, async (task) => {
             const { id, downloadURL, uploadURL, options } = task
 

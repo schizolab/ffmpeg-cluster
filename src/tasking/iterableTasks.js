@@ -1,7 +1,7 @@
 import { getTaskAsync } from "../rest/masterAPI.js"
 
 // an iterable class that grabs task from the master
-export class IterableTasks {
+export class IterableTask {
     constructor({ masterAddress, slaveName }) {
         this.masterAddress = masterAddress
         this.slaveName = slaveName
