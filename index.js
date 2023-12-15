@@ -7,7 +7,8 @@ const program = new Command()
 import { checkMasterStatusAsync, getTaskAsync, updateTaskAsync } from './src/rest/masterAPI.js'
 import { Socket } from './src/socket/socket.js';
 
-import { pMapIterable } from 'p-map';
+import pMap from 'p-map';
+import { IterableTask } from './src/tasking/iterableTasks.js'
 
 program
     .name('ffmpeg cluster')
@@ -56,35 +57,57 @@ program
             return
         }
 
-        // parallel processing
-        const iterableTasks = new IterableTask({ masterAddress, slaveName })
-        await pMapIterable(iterableTasks, async (task) => {
-            const { id, downloadURL, uploadURL, options } = task
-
-            // fetch file from URL
-            // report to socket along the way
-
-            // process with ffmpeg
-            // report to socket along the way
-
-            // upload to URL
-
-            // report task
-        }, { concurrency: threads })
-
-        // socket testing
         logger.info(`trying to connect to master Websocket`)
         const socket = new Socket(masterAddress)
         await socket.connectAsync()
+        logger.info(`connected to master Websocket`)
 
-        // set progress
-        await socket.setProgressAsync({
-            slaveName,
-            taskId: 1,
-            action: 'download',
-            progressPercentage: 0
-        })
-        logger.info(`test set progress for task 1`)
+        // parallel processing
+        const iterableTasks = new IterableTask({ masterAddress, slaveName })
+        const parallelResults = await pMap(iterableTasks, async (task) => {
+            // the iterable will return undefined when there are no more tasks
+            if (!task) {
+                return
+            }
+
+            const { taskId, downloadURL, uploadURL, options } = task
+
+            const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+            const setProgressAsync = async (action, progressPercentage) => {
+                try {
+                    await socket.setProgressAsync({
+                        slaveName,
+                        taskId,
+                        action,
+                        progressPercentage
+                    })
+                } catch (error) {
+                    logger.error(`failed to set progress for task ${taskId}, error:${error}`)
+                }
+            }
+
+            setProgressAsync('starting', 0)
+            await delay(1000)
+
+            // fetch file from URL
+            setProgressAsync('fetching file', 10)
+            await delay(1000)
+
+            // process with ffmpeg
+            setProgressAsync('transcoding', 20)
+            await delay(1000)
+
+            // upload to URL
+            setProgressAsync('uploading file', 90)
+            await delay(1000)
+
+            // finishing up
+            setProgressAsync('finishing', 100)
+            await delay(1000)
+
+        }, { concurrency: threads })
+
+        socket.close()
     })
 
 program.parse()

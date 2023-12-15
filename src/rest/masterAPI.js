@@ -32,9 +32,9 @@ export async function getTaskAsync(serverAddress, { slaveName }) {
     }).json()
 
     // this is for better readability
-    const { id, downloadURL, uploadURL, options } = task
+    const { taskId, downloadURL, uploadURL, options } = task
 
-    logger.info(`got task id:${id}`)
+    logger.info(`got task id:${taskId}`)
 
     return task
 }
