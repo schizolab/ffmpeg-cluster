@@ -50,17 +50,16 @@ program
 
         // connect to master
         try {
-            logger.info(`trying to connect to master REST`)
             const { remainingTasks } = await checkMasterStatusAsync(masterAddress)
+            logger.info(`connected to master on REST endpoint`)
         } catch (error) {
             logger.error(`failed to connect to master REST, error:${error}`)
             return
         }
 
-        logger.info(`trying to connect to master Websocket`)
         const socket = new Socket(masterAddress)
         await socket.connectAsync()
-        logger.info(`connected to master Websocket`)
+        logger.info(`connected to master on Websocket endpoint`)
 
         // parallel processing
         const iterableTasks = new IterableTask({ masterAddress, slaveName })
