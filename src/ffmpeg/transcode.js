@@ -102,7 +102,3 @@ function parseFFProbe(ffprobe) {
         }
     }
 }
-
-const ffprobed = await ffprobeAsync('../../dev-temp/1002.webm');
-
-console.log(JSON.stringify(parseFFProbe(ffprobed), null, 2));
