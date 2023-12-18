@@ -58,7 +58,7 @@ function parseProgress(data) {
     return progress;
 }
 
-async function ffprobeAsync(file) {
+export async function ffprobeAsync(file) {
     return new Promise((resolve, reject) => {
         const ffprobeProcess = exec(`ffprobe -v quiet -print_format json -show_format -show_streams ${file}`);
 
