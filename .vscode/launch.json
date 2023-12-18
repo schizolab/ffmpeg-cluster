@@ -5,9 +5,19 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Launch file",
+            "program": "${file}",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "cwd": "${fileDirname}",
+            "type": "node"
+        },
+        {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Launch project",
             "skipFiles": [
                 "<node_internals>/**"
             ],
@@ -17,6 +27,7 @@
                 "--master-address",
                 "127.0.0.1:50001"
             ]
-        }
+        },
+        
     ]
 }
