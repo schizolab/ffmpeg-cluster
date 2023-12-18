@@ -76,7 +76,7 @@ export async function ffprobeAsync(file) {
             if (code === 0) {
                 try {
                     const result = JSON.parse(output);
-                    resolve(result);
+                    resolve(parseFFProbe(result));
                 } catch (error) {
                     reject(new Error('Failed to parse ffprobe output'));
                 }
