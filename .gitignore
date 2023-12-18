@@ -164,3 +164,6 @@ dist
 
 # temporary processing folder
 temp/
+
+# for testing out ffmpeg command line during development
+dev-temp/
