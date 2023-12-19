@@ -4,6 +4,7 @@ import fsPromises from 'fs/promises'
 import path from 'path'
 import got from 'got'
 import { CoolDown } from './cooldown.js'
+import { ffprobeAsync, transcodeVideoAsync } from '../ffmpeg/transcode.js'
 
 const logger = log4js.getLogger()
 
@@ -14,9 +15,9 @@ async function prepFilePath(folder, fileName) {
 
     // create ./temp/videos recursively if it doesn't exist
     try {
-        await fsPromises.access('./temp/videos')
+        await fsPromises.access(folder)
     } catch (error) {
-        await fsPromises.mkdir('./temp/videos', { recursive: true })
+        await fsPromises.mkdir(folder, { recursive: true })
     }
 
     // delete file if it exists
@@ -30,13 +31,13 @@ async function prepFilePath(folder, fileName) {
     return downloadPath
 }
 
-async function downloadFile(downloadPath, progressCallbackAsync) {
+async function downloadFile({ downloadURL, downloadPath }, progressCallbackAsync) {
     const reportCoolDown = new CoolDown(REPORT_COOLDOWN_MS)
     const cooledReportAsync = async (action, progressPercentage) => reportCoolDown.executeAsync(async () => {
         await progressCallbackAsync(action, progressPercentage)
     })
 
-    await progressCallbackAsync('prepping download path', 0)
+    await progressCallbackAsync('downloading file', 0)
 
     // download file
     const downloadStream = got.stream(downloadURL)
@@ -69,14 +70,15 @@ export async function processTask({ task, slaveName, progressCallbackAsync }) {
         return
     }
 
-    const downloadPath = await downloadFile(task, progressCallbackAsync)
+    const downloadPath = await prepFilePath('./temp/videos/download', `${task.taskId}.tmp`)
+    await downloadFile({ downloadURL: task.downloadURL, downloadPath }, progressCallbackAsync)
 
 }
 
 await processTask({
     task: {
         taskId: '1234',
-        downloadURL: 'http://192.168.2.93:9000/terry-source/numbered/video/1045.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ffmpeg-cluster-master%2F20231218%2Fdefault%2Fs3%2Faws4_request&X-Amz-Date=20231218T224432Z&X-Amz-Expires=3600&X-Amz-Signature=e7478affe67c0c6aeb187b382cf9e54d2eb37156e8b341373ef6a01d01017087&X-Amz-SignedHeaders=host&x-id=GetObject',
+        downloadURL: 'http://192.168.2.93:9000/terry-source/numbered/video/1045.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ffmpeg-cluster-master%2F20231218%2Fdefault%2Fs3%2Faws4_request&X-Amz-Date=20231218T234707Z&X-Amz-Expires=3600&X-Amz-Signature=5dbe30ede9d260a738a812b5e75ca9bd02c30c91541c3d202701b85f7a3f77b1&X-Amz-SignedHeaders=host&x-id=GetObject',
         uploadURL: 'http://192.168.2.93:9000/terry-hosting/1045.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ffmpeg-cluster-master%2F20231218%2Fdefault%2Fs3%2Faws4_request&X-Amz-Date=20231218T224432Z&X-Amz-Expires=3600&X-Amz-Signature=2e9d932141cef9b398922a58046ee29fad5969b2b5e246c501ec0c78c2c70aeb&X-Amz-SignedHeaders=host&x-id=PutObjec',
         options: {}
     },
