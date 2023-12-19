@@ -1,9 +1,6 @@
 import { promisify } from 'util';
 import { exec } from 'child_process';
 
-const inputFilePath = 'path/to/input-video.mp4';
-const outputFilePath = 'path/to/output-video.webm';
-
 const CPU_USED = 1;
 
 const ffmpegCPU = `
