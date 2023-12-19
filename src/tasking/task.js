@@ -30,16 +30,13 @@ async function prepFilePath(folder, fileName) {
     return downloadPath
 }
 
-async function downloadFile(task, progressCallbackAsync) {
-    const { taskId, downloadURL } = task
-
+async function downloadFile(downloadPath, progressCallbackAsync) {
     const reportCoolDown = new CoolDown(REPORT_COOLDOWN_MS)
     const cooledReportAsync = async (action, progressPercentage) => reportCoolDown.executeAsync(async () => {
         await progressCallbackAsync(action, progressPercentage)
     })
 
     await progressCallbackAsync('prepping download path', 0)
-    const downloadPath = await prepFilePath('./temp/videos', `${taskId}.tmp`)
 
     // download file
     const downloadStream = got.stream(downloadURL)
