@@ -134,16 +134,3 @@ export async function processTask({ task, slaveName, progressCallbackAsync }) {
     const videoOutputPath = await prepFilePath('./temp/videos/transcodes', `${task.taskId}.webm`)
     await processFileAsync({ downloadPath, videoOutputPath }, progressCallbackAsync)
 }
-
-await processTask({
-    task: {
-        taskId: 'test',
-        downloadURL: 'http://192.168.2.93:9000/terry-source/numbered/video/1047.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ffmpeg-cluster-master%2F20231220%2Fdefault%2Fs3%2Faws4_request&X-Amz-Date=20231220T200715Z&X-Amz-Expires=3600&X-Amz-Signature=d3383b7e9aceb374f7d605af59d5d9e31f9b7c818ea2684364405679ec4df6f4&X-Amz-SignedHeaders=host&x-id=GetObject',
-        uploadURL: 'http://192.168.2.93:9000/terry-hosting/1045.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ffmpeg-cluster-master%2F20231218%2Fdefault%2Fs3%2Faws4_request&X-Amz-Date=20231218T224432Z&X-Amz-Expires=3600&X-Amz-Signature=2e9d932141cef9b398922a58046ee29fad5969b2b5e246c501ec0c78c2c70aeb&X-Amz-SignedHeaders=host&x-id=PutObjec',
-        options: {}
-    },
-    slaveName: 'temp',
-    progressCallbackAsync: async (progress) => {
-        console.log(JSON.stringify(progress))
-    }
-})
