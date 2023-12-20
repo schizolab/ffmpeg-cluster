@@ -1,34 +1,45 @@
 import { promisify } from 'util';
 import { exec } from 'child_process';
 
-const CPU_USED = 1;
+const CPU_USED = 8;
 
-const ffmpegCPU = `
-    ffmpeg -i ${inputFilePath} \
-    -c:v libvpx-vp9 \
-    -c:a libopus \
-    -cpu-used -${CPU_USED} \
-    -b:v 0 \
-    -crf 30 \
-    -q:v 2 \
-    -auto-alt-ref 1 \
-    -lag-in-frames 25 \
-    -progress pipe:1 \
-    -hide_banner \
-    -loglevel error \
-    ${outputFilePath}
-`;
+export async function transcodeVideoAsync({
+    inputFilePath,
+    outputFilePath,
+    video: { width, height, quality, isDeNoise },
+    audio: { sampleRate },
+}, progressCallbackAsync) {
+    const ffmpegCPU = `ffmpeg -i ${inputFilePath} \
+        -c:v libvpx-vp9 \
+        -c:a libopus \
+        -cpu-used -${CPU_USED} \
+        -b:v 0 ${isDeNoise ? '-vf "hqdn3d=4:3:6:4" ' : ''}\
+        -crf ${quality} \
+        -q:v 2 \
+        -auto-alt-ref 1 \
+        -lag-in-frames 25 \
+        -vf scale=${width}:-2 \
+        -progress pipe:1 \
+        -hide_banner \
+        -loglevel error \
+        ${outputFilePath}`;
 
-const ffmpegNvidia = `
-`
+    const ffmpegNvidia = `
+    `
 
-export function transcodeVideoAsync(progressCallback) {
+    // get video length
+    const ffprobed = await ffprobeAsync(inputFilePath)
+
     return new Promise(async (resolve, reject) => {
         const ffmpegProcess = exec(ffmpegCPU);
 
-        ffmpegProcess.stderr.on('data', (data) => {
+        ffmpegProcess.stdout.on('data', async (data) => {
             const progress = parseProgress(data);
-            progressCallback(progress);
+            await progressCallbackAsync({
+                action: 'transcoding video',
+                progressPercentage: progress.outTimeUs / 1000000 / ffprobed.video.duration * 100,
+                fps: progress.fps,
+            });
         });
 
         ffmpegProcess.on('exit', (code) => {
@@ -52,7 +63,11 @@ function parseProgress(data) {
         progress[key] = value;
     }
 
-    return progress;
+    const parsedProgress = {
+        outTimeUs: Number.parseInt(progress.out_time_us),
+        fps: Number.parseFloat(progress.fps),
+    }
+    return parsedProgress;
 }
 
 export async function ffprobeAsync(file) {
