@@ -19,7 +19,7 @@ program
 program
     .command('start')
     .option('-m, --master-address <master address>', 'The master address')
-    .option('-t, --threads [threads]', 'How many parallel threads to use for encoding')
+    .option('-t, --threads [threads]', 'How many parallel threads to use for encoding', parseInt)
     .description('Connect to the master and start processing')
     .action(async ({ masterAddress, threads = 4 }) => {
         // principle of operation
