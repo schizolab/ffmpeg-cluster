@@ -67,7 +67,7 @@ async function downloadFile({ downloadURL, downloadPath }, progressCallbackAsync
     return downloadPath
 }
 
-async function processFileAsync({ downloadPath, videoOutputPath }, progressCallbackAsync) {
+async function transcodeFileAsync({ downloadPath, videoOutputPath }, progressCallbackAsync) {
     const reportCoolDown = new CoolDown(REPORT_COOLDOWN_MS)
     const cooledReportAsync = async (progress) => reportCoolDown.executeAsync(async () => {
         await progressCallbackAsync(progress)
@@ -132,5 +132,5 @@ export async function processTask({ task, slaveName, progressCallbackAsync }) {
 
     console.log('asf')
     const videoOutputPath = await prepFilePath('./temp/videos/transcodes', `${task.taskId}.webm`)
-    await processFileAsync({ downloadPath, videoOutputPath }, progressCallbackAsync)
+    await transcodeFileAsync({ downloadPath, videoOutputPath }, progressCallbackAsync)
 }
