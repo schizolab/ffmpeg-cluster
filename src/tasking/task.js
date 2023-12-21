@@ -130,7 +130,6 @@ export async function processTask({ task, slaveName, progressCallbackAsync }) {
     const downloadPath = await prepFilePath('./temp/videos/downloads', `${task.taskId}.tmp`)
     await downloadFile({ downloadURL: task.downloadURL, downloadPath }, progressCallbackAsync)
 
-    console.log('asf')
     const videoOutputPath = await prepFilePath('./temp/videos/transcodes', `${task.taskId}.webm`)
     await transcodeFileAsync({ downloadPath, videoOutputPath }, progressCallbackAsync)
 }
