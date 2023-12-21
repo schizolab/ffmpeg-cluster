@@ -118,20 +118,3 @@ function parseFFProbe(ffprobe) {
         }
     }
 }
-
-const { outputFilePath } = await transcodeVideoAsync({
-    inputFilePath: 'temp/videos/downloads/3102.mp4',
-    outputFilePath: 'temp/videos/transcodes/3102.webm',
-    video: {
-        width: 700,
-        quality: 30,
-        isDeNoise: true
-    },
-    audio: {
-        sampleRate: 48000
-    }
-}, async (progress) => {
-    console.log(JSON.stringify(progress))
-})
-
-console.log(outputFilePath)
