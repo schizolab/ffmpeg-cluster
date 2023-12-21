@@ -42,6 +42,10 @@ export async function transcodeVideoAsync({
             });
         });
 
+        ffmpegProcess.stderr.on('data', (error) => {
+            reject(new Error(error));
+        });
+
         ffmpegProcess.on('exit', (code) => {
             if (code === 0) {
                 resolve({
