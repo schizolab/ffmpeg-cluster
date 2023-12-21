@@ -1,7 +1,7 @@
 import { promisify } from 'util';
 import { exec } from 'child_process';
 
-const CPU_USED = 8;
+const CPU_USED = 1;
 
 export async function transcodeVideoAsync({
     inputFilePath,
