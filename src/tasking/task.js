@@ -99,22 +99,27 @@ async function transcodeFileAsync({ downloadPath, videoOutputPath }, progressCal
         action: 'transcoding video',
         progressPercentage: 0
     })
-    await transcodeVideoAsync(
-        {
-            inputFilePath: downloadPath,
-            outputFilePath: videoOutputPath,
-            video: {
-                width: Math.round(videoInfo.video.width * dimensionMultiplier),
-                height: Math.round(videoInfo.video.height * dimensionMultiplier),
-                quality: videoQuality,
-                isDeNoise: false
+    try {
+        await transcodeVideoAsync(
+            {
+                inputFilePath: downloadPath,
+                outputFilePath: videoOutputPath,
+                video: {
+                    width: Math.round(videoInfo.video.width * dimensionMultiplier),
+                    height: Math.round(videoInfo.video.height * dimensionMultiplier),
+                    quality: videoQuality,
+                    isDeNoise: false
+                },
+                audio: {
+                    sampleRate: audioSampleRate
+                }
             },
-            audio: {
-                sampleRate: audioSampleRate
-            }
-        },
-        async (progress) => cooledReportAsync(progress)
-    )
+            async (progress) => cooledReportAsync(progress)
+        )
+    } catch (error) {
+        logger.error(`transcode failed: ${error}`)
+        throw error
+    }
     await progressCallbackAsync({
         action: 'transcoding video',
         progressPercentage: 100
