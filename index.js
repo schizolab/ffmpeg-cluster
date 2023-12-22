@@ -1,3 +1,5 @@
+import 'dotenv/config'
+
 import log4js from './src/logging.js'
 const logger = log4js.getLogger()
 
