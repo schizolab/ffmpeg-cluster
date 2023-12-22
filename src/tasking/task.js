@@ -92,10 +92,12 @@ async function transcodeFileAsync({ downloadPath, videoOutputPath }, progressCal
         if (minDimension > 700) {
             dimensionMultiplier = 700 / minDimension
         }
-        const videoQuality = 30 // use constant quality mode
-        const audioSampleRate = Math.min(48000, videoInfo.audio.sampleRate)
     }
-    
+
+    // quality
+    const videoQuality = 30 // use constant quality mode
+    const audioSampleRate = Math.min(48000, videoInfo.audio.sampleRate)
+
     // transcode video
     await progressCallbackAsync({
         action: 'transcoding video',
@@ -134,4 +136,6 @@ export async function processTask({ task, slaveName, progressCallbackAsync }) {
 
     const videoOutputPath = await prepFilePath('./temp/videos/transcodes', `${task.taskId}.webm`)
     await transcodeFileAsync({ downloadPath, videoOutputPath }, progressCallbackAsync)
+
+    return videoOutputPath
 }
