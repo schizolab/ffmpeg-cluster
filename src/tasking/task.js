@@ -87,13 +87,15 @@ async function transcodeFileAsync({ downloadPath, videoOutputPath }, progressCal
     // set up transcode options
     // max 700p, 720p bad, 72=66+6
     let dimensionMultiplier = 1
-    const minDimension = Math.min(videoInfo.video.width, videoInfo.video.height)
-    if (minDimension > 700) {
-        dimensionMultiplier = 700 / minDimension
+    if (process.env.ANTI_666) {
+        const minDimension = Math.min(videoInfo.video.width, videoInfo.video.height)
+        if (minDimension > 700) {
+            dimensionMultiplier = 700 / minDimension
+        }
+        const videoQuality = 30 // use constant quality mode
+        const audioSampleRate = Math.min(48000, videoInfo.audio.sampleRate)
     }
-    const videoQuality = 30 // use constant quality mode
-    const audioSampleRate = Math.min(48000, videoInfo.audio.sampleRate)
-
+    
     // transcode video
     await progressCallbackAsync({
         action: 'transcoding video',
