@@ -66,29 +66,38 @@ program
         const iterableTasks = new IterableTask({ masterAddress, slaveName })
         const parallelResults = await pMap(iterableTasks, async (task) => {
             try {
-            await processTask({
-                task,
-                slaveName,
-                progressCallbackAsync: async ({ action, progressPercentage, fps }) => {
-                    try {
-                        await socket.setProgressAsync({
-                            slaveName,
-                            taskId: task.taskId,
-                            action,
-                            progressPercentage
-                        })
-                    } catch (error) {
-                        logger.error(`failed to set progress for task ${taskId}, error:${error}`)
+                await processTask({
+                    task,
+                    slaveName,
+                    progressCallbackAsync: async ({ action, progressPercentage, fps }) => {
+                        try {
+                            await socket.setProgressAsync({
+                                slaveName,
+                                taskId: task.taskId,
+                                action,
+                                progressPercentage
+                            })
+                        } catch (error) {
+                            logger.error(`failed to set progress for task ${taskId}, error:${error}`)
+                        }
                     }
-                }
-            })
+                })
+            } catch (error) {
+                logger.error(`task ${task.taskId} failed, error:${error}`)
+                // mark as failed
+                await socket.setResultAsync({
+                    slaveName,
+                    taskId: task.taskId,
+                    status: 'failed',
+                    message: error.message
+                })
+            }
 
             // mark as complete
-            await socket.setProgressAsync({
+            await socket.setResultAsync({
                 slaveName,
                 taskId: task.taskId,
-                action: 'completing task', // master marks task as complete when it receives 'completing task'
-                progressPercentage: 100
+                status: 'completed',
             })
         }, { concurrency: threads })
 
