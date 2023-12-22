@@ -3,8 +3,6 @@ const logger = log4js.getLogger('task')
 
 import { getTaskAsync } from "../rest/masterAPI.js"
 
-const TEMP_MAX_TASKS = 2
-
 // an iterable class that grabs task from the master
 export class IterableTask {
     constructor({ masterAddress, slaveName }) {
@@ -20,13 +18,6 @@ export class IterableTask {
 
     async next() {
         try {
-            if (this.taskCount >= TEMP_MAX_TASKS) {
-                return {
-                    value: undefined,
-                    done: true
-                }
-            }
-
             const task = await getTaskAsync(this.masterAddress, { slaveName: this.slaveName })
 
             this.taskCount++
