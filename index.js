@@ -65,6 +65,11 @@ program
         // parallel processing
         const iterableTasks = new IterableTask({ masterAddress, slaveName })
         const parallelResults = await pMap(iterableTasks, async (task) => {
+            // the iterable will return undefined when there are no more tasks
+            if (!task) {
+                return
+            }
+
             try {
                 await processTask({
                     task,

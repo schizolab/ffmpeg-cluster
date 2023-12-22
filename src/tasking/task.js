@@ -127,11 +127,6 @@ async function transcodeFileAsync({ downloadPath, videoOutputPath }, progressCal
 }
 
 export async function processTask({ task, slaveName, progressCallbackAsync }) {
-    // the iterable will return undefined when there are no more tasks
-    if (!task) {
-        return
-    }
-
     const downloadPath = await prepFilePath('./temp/videos/downloads', `${task.taskId}.tmp`)
     await downloadFile({ downloadURL: task.downloadURL, downloadPath }, progressCallbackAsync)
 
