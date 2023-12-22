@@ -13,6 +13,9 @@ import pMap from 'p-map';
 import { IterableTask } from './src/tasking/iterableTasks.js'
 import { processTask } from './src/tasking/task.js';
 
+import fs from 'fs'
+import got from 'got'
+
 program
     .name('ffmpeg cluster')
     .description('The cluster node for transcoding videos to vp9, this needs to connect to the master')
@@ -72,8 +75,9 @@ program
                 return
             }
 
+            let videoOutputPath = ''
             try {
-                await processTask({
+                videoOutputPath = await processTask({
                     task,
                     slaveName,
                     progressCallbackAsync: async ({ action, progressPercentage, fps }) => {
@@ -98,6 +102,30 @@ program
                     status: 'failed',
                     message: error.message
                 })
+
+                return
+            }
+
+            // push to s3
+            try {
+                const contentLength = await new Promise((resolve, reject) => {
+                    fs.stat(videoOutputPath, (error, stats) => {
+                        if (error) {
+                            reject(error)
+                        } else {
+                            resolve(stats.size)
+                        }
+                    })
+                })
+                const fileStream = fs.createReadStream(videoOutputPath)
+                await got.put(task.uploadURL, {
+                    body: fileStream,
+                    headers: {
+                        'content-length': contentLength
+                    }
+                })
+            } catch (error) {
+                logger.error(`failed to upload file to s3, error:${error}`)
             }
 
             // mark as complete
