@@ -11,7 +11,7 @@ const logger = log4js.getLogger()
 const REPORT_COOLDOWN_MS = 200
 
 async function prepFilePath(folder, fileName) {
-    const downloadPath = path.join(folder, fileName)
+    const filePath = path.join(folder, fileName)
 
     // create ./temp/videos recursively if it doesn't exist
     try {
@@ -20,19 +20,9 @@ async function prepFilePath(folder, fileName) {
         await fsPromises.mkdir(folder, { recursive: true })
     }
 
-    // delete file if it exists
-    try {
-        await fsPromises.access(downloadPath)
-        try {
-            await fsPromises.rm(downloadPath)
-        } catch (error) { //remove failed(could be a problem)
-            logger.error(`file remove failed: ${downloadPath}. ${error}`)
-        }
-    } catch (error) { // file doesn't exist
+    await deleteFileAsync(filePath)
 
-    }
-
-    return downloadPath
+    return filePath
 }
 
 async function downloadFile({ downloadURL, downloadPath }, progressCallbackAsync) {
@@ -155,10 +145,16 @@ async function uploadFileAsync({ videoOutputPath, uploadURL }, progressCallbackA
 }
 
 async function deleteFileAsync(filePath) {
+    // delete file if it exists
     try {
-        await fs.promises.rm(filePath)
-    } catch (error) {
-        logger.error(`failed to delete file, error:${error}`)
+        await fsPromises.access(filePath)
+        try {
+            await fsPromises.rm(filePath)
+        } catch (error) { //remove failed(could be a problem)
+            logger.error(`file remove failed: ${filePath}. ${error}`)
+        }
+    } catch (error) { // file doesn't exist
+
     }
 }
 
