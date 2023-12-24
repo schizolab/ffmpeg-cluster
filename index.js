@@ -94,7 +94,7 @@ program
 
                             logger.debug(`task ${task.taskId}: ${action}, ${progressPercentage}%`)
                         } catch (error) {
-                            logger.error(`failed to set progress for task ${taskId}, error:${error}`)
+                            logger.error(`failed to set progress for task ${task.taskId}, error:${error}`)
                         }
                     }
                 )
