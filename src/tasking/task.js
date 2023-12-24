@@ -121,8 +121,10 @@ async function transcodeFileAsync({ downloadPath, videoOutputPath }, progressCal
 }
 
 async function uploadFileAsync({ videoOutputPath, uploadURL }, progressCallbackAsync) {
-        // push to s3
-        try {
+    const reportCoolDown = new CoolDown(REPORT_COOLDOWN_MS)
+    const cooledReportAsync = async (progress) => reportCoolDown.executeAsync(async () => {
+        await progressCallbackAsync(progress)
+    })
             const contentLength = await new Promise((resolve, reject) => {
                 fs.stat(videoOutputPath, (error, stats) => {
                     if (error) {
