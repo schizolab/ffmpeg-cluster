@@ -16,16 +16,16 @@ log4js.configure({
     },
     categories: {
         default: {
-            appenders: ['debug', 'ui'],
+            appenders: ['ui'],
             level: 'trace'
         },
         rest: {
             appenders: ['debug', 'ui'],
-            level: 'debug'
+            level: 'info'
         },
         socket: {
             appenders: ['debug', 'ui'],
-            level: 'trace'
+            level: 'info'
         },
         task: {
             appenders: ['task', 'debug', 'ui'],
