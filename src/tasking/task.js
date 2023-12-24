@@ -162,7 +162,7 @@ async function deleteFileAsync(filePath) {
     }
 }
 
-export async function processTask({ task, slaveName, progressCallbackAsync }) {
+export async function processTask({ task, slaveName }, progressCallbackAsync) {
     const downloadPath = await prepFilePath('./temp/videos/downloads', `${task.taskId}.tmp`)
     await downloadFile({ downloadURL: task.downloadURL, downloadPath }, progressCallbackAsync)
 

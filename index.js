@@ -77,10 +77,13 @@ program
 
             let videoOutputPath = ''
             try {
-                videoOutputPath = await processTask({
-                    task,
-                    slaveName,
-                    progressCallbackAsync: async ({ action, progressPercentage, fps }) => {
+                videoOutputPath = await processTask(
+                    {
+                        task,
+                        slaveName
+                    },
+                    // progress callback
+                    async ({ action, progressPercentage, fps }) => {
                         try {
                             await socket.setProgressAsync({
                                 slaveName,
@@ -88,11 +91,13 @@ program
                                 action,
                                 progressPercentage
                             })
+
+                            logger.debug(`task ${task.taskId}: ${action}, ${progressPercentage}%`)
                         } catch (error) {
                             logger.error(`failed to set progress for task ${taskId}, error:${error}`)
                         }
                     }
-                })
+                )
             } catch (error) {
                 logger.error(`task ${task.taskId} failed, error:${error}`)
                 // mark as failed
