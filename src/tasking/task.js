@@ -125,6 +125,8 @@ async function uploadFileAsync({ videoOutputPath, uploadURL }, progressCallbackA
     const cooledReportAsync = async (progress) => reportCoolDown.executeAsync(async () => {
         await progressCallbackAsync(progress)
     })
+
+    // length is specifically required for upload
             const contentLength = await new Promise((resolve, reject) => {
                 fs.stat(videoOutputPath, (error, stats) => {
                     if (error) {
