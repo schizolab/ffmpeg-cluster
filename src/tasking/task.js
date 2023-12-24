@@ -132,16 +132,28 @@ async function uploadFileAsync({ videoOutputPath, uploadURL }, progressCallbackA
                     }
                 })
             })
+
             const fileStream = fs.createReadStream(videoOutputPath)
-            await got.put(uploadURL, {
-                body: fileStream,
+
+    const uploadStream = got.stream.put(uploadURL, {
                 headers: {
                     'content-length': contentLength
                 }
             })
-        } catch (error) {
-            logger.error(`failed to upload file to s3, error:${error}`)
-        }
+    fileStream.pipe(uploadStream)
+    await new Promise((resolve, reject) => {
+        uploadStream.on('finish', resolve)
+        uploadStream.on('error', reject)
+        // on read stream progress
+        uploadStream.on('uploadProgress', ({ transferred, total, percent }) => {
+            cooledReportAsync({ action: 'uploading file', progressPercentage: percent })
+        })
+    })
+
+    await progressCallbackAsync({
+        action: 'downloading file',
+        progressPercentage: 100
+    })
 }
 
 async function deleteFileAsync(filePath) {
