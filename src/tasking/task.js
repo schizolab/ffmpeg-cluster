@@ -127,23 +127,23 @@ async function uploadFileAsync({ videoOutputPath, uploadURL }, progressCallbackA
     })
 
     // length is specifically required for upload
-            const contentLength = await new Promise((resolve, reject) => {
-                fs.stat(videoOutputPath, (error, stats) => {
-                    if (error) {
-                        reject(error)
-                    } else {
-                        resolve(stats.size)
-                    }
-                })
-            })
+    const contentLength = await new Promise((resolve, reject) => {
+        fs.stat(videoOutputPath, (error, stats) => {
+            if (error) {
+                reject(error)
+            } else {
+                resolve(stats.size)
+            }
+        })
+    })
 
-            const fileStream = fs.createReadStream(videoOutputPath)
+    const fileStream = fs.createReadStream(videoOutputPath)
 
     const uploadStream = got.stream.put(uploadURL, {
-                headers: {
-                    'content-length': contentLength
-                }
-            })
+        headers: {
+            'content-length': contentLength
+        }
+    })
     fileStream.pipe(uploadStream)
     await new Promise((resolve, reject) => {
         uploadStream.on('finish', resolve)
@@ -175,16 +175,21 @@ async function deleteFileAsync(filePath) {
 }
 
 export async function processTask({ task, slaveName }, progressCallbackAsync) {
-    const downloadPath = await prepFilePath('./temp/videos/downloads', `${task.taskId}.tmp`)
-    await downloadFile({ downloadURL: task.downloadURL, downloadPath }, progressCallbackAsync)
+    try {
+        const downloadPath = await prepFilePath('./temp/videos/downloads', `${task.taskId}.tmp`)
+        await downloadFile({ downloadURL: task.downloadURL, downloadPath }, progressCallbackAsync)
 
-    const videoOutputPath = await prepFilePath('./temp/videos/transcodes', `${task.taskId}.webm`)
-    await transcodeFileAsync({ downloadPath, videoOutputPath }, progressCallbackAsync)
+        const videoOutputPath = await prepFilePath('./temp/videos/transcodes', `${task.taskId}.webm`)
+        await transcodeFileAsync({ downloadPath, videoOutputPath }, progressCallbackAsync)
 
-    await uploadFileAsync({ videoOutputPath, uploadURL: task.uploadURL }, progressCallbackAsync)
+        await uploadFileAsync({ videoOutputPath, uploadURL: task.uploadURL }, progressCallbackAsync)
 
-    await deleteFileAsync(downloadPath)
-    await deleteFileAsync(videoOutputPath)
+    } catch (error) {
+        throw error
+    } finally {
+        await deleteFileAsync(downloadPath)
+        await deleteFileAsync(videoOutputPath)
+    }
 
     return videoOutputPath
 }
