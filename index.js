@@ -128,6 +128,13 @@ program
                 logger.error(`failed to upload file to s3, error:${error}`)
             }
 
+            // delete file
+            try {
+                await fs.promises.rm(videoOutputPath)
+            } catch (error) {
+                logger.error(`failed to delete file, error:${error}`)
+            }
+
             // mark as complete
             await socket.setResultAsync({
                 slaveName,
