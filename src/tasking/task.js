@@ -156,7 +156,7 @@ async function uploadFileAsync({ videoOutputPath, uploadURL }, progressCallbackA
     })
 
     await progressCallbackAsync({
-        action: 'downloading file',
+        action: 'uploading file',
         progressPercentage: 100
     })
 }
