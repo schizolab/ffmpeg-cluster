@@ -130,12 +130,49 @@ async function transcodeFileAsync({ downloadPath, videoOutputPath }, progressCal
     })
 }
 
+async function uploadFileAsync({ videoOutputPath, uploadURL }, progressCallbackAsync) {
+        // push to s3
+        try {
+            const contentLength = await new Promise((resolve, reject) => {
+                fs.stat(videoOutputPath, (error, stats) => {
+                    if (error) {
+                        reject(error)
+                    } else {
+                        resolve(stats.size)
+                    }
+                })
+            })
+            const fileStream = fs.createReadStream(videoOutputPath)
+            await got.put(uploadURL, {
+                body: fileStream,
+                headers: {
+                    'content-length': contentLength
+                }
+            })
+        } catch (error) {
+            logger.error(`failed to upload file to s3, error:${error}`)
+        }
+}
+
+async function deleteFileAsync(filePath) {
+    try {
+        await fs.promises.rm(filePath)
+    } catch (error) {
+        logger.error(`failed to delete file, error:${error}`)
+    }
+}
+
 export async function processTask({ task, slaveName, progressCallbackAsync }) {
     const downloadPath = await prepFilePath('./temp/videos/downloads', `${task.taskId}.tmp`)
     await downloadFile({ downloadURL: task.downloadURL, downloadPath }, progressCallbackAsync)
 
     const videoOutputPath = await prepFilePath('./temp/videos/transcodes', `${task.taskId}.webm`)
     await transcodeFileAsync({ downloadPath, videoOutputPath }, progressCallbackAsync)
+
+    await uploadFileAsync({ videoOutputPath, uploadURL: task.uploadURL }, progressCallbackAsync)
+
+    await deleteFileAsync(downloadPath)
+    await deleteFileAsync(videoOutputPath)
 
     return videoOutputPath
 }

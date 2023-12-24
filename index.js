@@ -106,35 +106,6 @@ program
                 return
             }
 
-            // push to s3
-            try {
-                const contentLength = await new Promise((resolve, reject) => {
-                    fs.stat(videoOutputPath, (error, stats) => {
-                        if (error) {
-                            reject(error)
-                        } else {
-                            resolve(stats.size)
-                        }
-                    })
-                })
-                const fileStream = fs.createReadStream(videoOutputPath)
-                await got.put(task.uploadURL, {
-                    body: fileStream,
-                    headers: {
-                        'content-length': contentLength
-                    }
-                })
-            } catch (error) {
-                logger.error(`failed to upload file to s3, error:${error}`)
-            }
-
-            // delete file
-            try {
-                await fs.promises.rm(videoOutputPath)
-            } catch (error) {
-                logger.error(`failed to delete file, error:${error}`)
-            }
-
             // mark as complete
             await socket.setResultAsync({
                 slaveName,
