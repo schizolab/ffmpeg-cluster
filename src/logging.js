@@ -24,8 +24,8 @@ log4js.configure({
             level: 'info'
         },
         socket: {
-            appenders: ['debug', 'ui'],
-            level: 'info'
+            appenders: ['ui'],
+            level: 'trace'
         },
         task: {
             appenders: ['task', 'debug', 'ui'],

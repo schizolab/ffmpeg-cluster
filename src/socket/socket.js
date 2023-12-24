@@ -32,9 +32,11 @@ export class Socket {
                 },
                 (response) => {
                     if (response.success) {
+                        logger.debug(`task ${taskId}: ${action}, ${progressPercentage}%`)
                         resolve();
                     } else {
-                        reject(response.error);
+                        logger.error(`failed to set progress for task ${taskId}, error:${response.error}`)
+                        reject(new Error(response.error));
                     }
                 });
         });

@@ -84,18 +84,12 @@ program
                     },
                     // progress callback
                     async ({ action, progressPercentage, fps }) => {
-                        try {
-                            await socket.setProgressAsync({
-                                slaveName,
-                                taskId: task.taskId,
-                                action,
-                                progressPercentage
-                            })
-
-                            logger.debug(`task ${task.taskId}: ${action}, ${progressPercentage}%`)
-                        } catch (error) {
-                            logger.error(`failed to set progress for task ${task.taskId}, error:${error}`)
-                        }
+                        await socket.setProgressAsync({
+                            slaveName,
+                            taskId: task.taskId,
+                            action,
+                            progressPercentage
+                        })
                     }
                 )
             } catch (error) {
