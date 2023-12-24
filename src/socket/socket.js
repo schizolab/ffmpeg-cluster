@@ -32,7 +32,6 @@ export class Socket {
                 },
                 (response) => {
                     if (response.success) {
-                        logger.info(`set progress for task ${taskId}: ${action}, ${progressPercentage}%`);
                         resolve();
                     } else {
                         logger.error(`failed to set progress for task ${taskId}, error:${response.error}`);
