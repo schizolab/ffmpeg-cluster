@@ -49,7 +49,7 @@ program
             }
         }
 
-        const slaveName = 'temp'
+        const slaveName = process.env.SLAVE_NAME
 
         // important for identifying sessions in logs
         logger.info(`started slave ${slaveName} with ${threads} threads, master address: ${masterAddress}`)
