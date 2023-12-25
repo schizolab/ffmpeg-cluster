@@ -21,8 +21,8 @@ export class Socket {
         })
     }
 
-    setProgressAsync({ slaveName, taskId, action, progressPercentage }) {
-        return new Promise((resolve, reject) => {
+    async setProgressAsync({ slaveName, taskId, action, progressPercentage }) {
+        await new Promise((resolve, reject) => {
             this.socket.emit('set progress',
                 {
                     slaveName,
@@ -36,7 +36,7 @@ export class Socket {
                         resolve();
                     } else {
                         logger.error(`failed to set progress for task ${taskId}, error:${response.error}`)
-                        reject(new Error(response.error));
+                        reject(response.error);
                     }
                 });
         });

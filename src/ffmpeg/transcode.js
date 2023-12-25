@@ -33,13 +33,16 @@ export async function transcodeVideoAsync({
     return new Promise(async (resolve, reject) => {
         const ffmpegProcess = exec(ffmpegCPU);
 
-        ffmpegProcess.stdout.on('data', async (data) => {
+        ffmpegProcess.stdout.on('data', (data) => {
             const progress = parseProgress(data);
-            await progressCallbackAsync({
+            progressCallbackAsync({
                 action: 'transcoding video',
                 progressPercentage: progress.outTimeUs / 1000000 / ffprobed.video.duration * 100,
                 fps: progress.fps,
-            });
+            }).catch((error) => {
+                ffmpegProcess.kill();
+                reject(error);
+            })
         });
 
         ffmpegProcess.stderr.on('data', (error) => {

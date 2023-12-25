@@ -6,7 +6,7 @@ import got from 'got'
 import { CoolDown } from './cooldown.js'
 import { ffprobeAsync, transcodeVideoAsync } from '../ffmpeg/transcode.js'
 
-const logger = log4js.getLogger()
+const logger = log4js.getLogger('task')
 
 const REPORT_COOLDOWN_MS = 200
 
@@ -27,7 +27,7 @@ async function prepFilePath(folder, fileName) {
 
 async function downloadFileAsync({ downloadURL, downloadPath }, progressCallbackAsync) {
     const reportCoolDown = new CoolDown(REPORT_COOLDOWN_MS)
-    const cooledReportAsync = async (progress) => reportCoolDown.executeAsync(async () => {
+    const cooledReportAsync = async (progress) => await reportCoolDown.executeAsync(async () => {
         await progressCallbackAsync(progress)
     })
 
@@ -46,6 +46,9 @@ async function downloadFileAsync({ downloadURL, downloadPath }, progressCallback
         // on write stream progress
         downloadStream.on('downloadProgress', ({ transferred, total, percent }) => {
             cooledReportAsync({ action: 'downloading file', progressPercentage: percent * 100 })
+                .catch((error) => {
+                    reject(error)
+                })
         })
         downloadStream.on('error', reject)
     })
@@ -60,7 +63,7 @@ async function downloadFileAsync({ downloadURL, downloadPath }, progressCallback
 
 async function transcodeFileAsync({ downloadPath, videoOutputPath }, progressCallbackAsync) {
     const reportCoolDown = new CoolDown(REPORT_COOLDOWN_MS)
-    const cooledReportAsync = async (progress) => reportCoolDown.executeAsync(async () => {
+    const cooledReportAsync = async (progress) => await reportCoolDown.executeAsync(async () => {
         await progressCallbackAsync(progress)
     })
 
@@ -109,7 +112,7 @@ async function transcodeFileAsync({ downloadPath, videoOutputPath }, progressCal
                     sampleRate: audioSampleRate
                 }
             },
-            async (progress) => cooledReportAsync(progress)
+            async (progress) => await cooledReportAsync(progress)
         )
     } catch (error) {
         logger.error(`transcode failed: ${error}`)
@@ -123,7 +126,7 @@ async function transcodeFileAsync({ downloadPath, videoOutputPath }, progressCal
 
 async function uploadFileAsync({ videoOutputPath, uploadURL }, progressCallbackAsync) {
     const reportCoolDown = new CoolDown(REPORT_COOLDOWN_MS)
-    const cooledReportAsync = async (progress) => reportCoolDown.executeAsync(async () => {
+    const cooledReportAsync = async (progress) => await reportCoolDown.executeAsync(async () => {
         await progressCallbackAsync(progress)
     })
 
@@ -152,6 +155,9 @@ async function uploadFileAsync({ videoOutputPath, uploadURL }, progressCallbackA
         // on read stream progress
         uploadStream.on('uploadProgress', ({ transferred, total, percent }) => {
             cooledReportAsync({ action: 'uploading file', progressPercentage: percent * 100 })
+                .catch((error) => {
+                    reject(error)
+                })
         })
     })
 

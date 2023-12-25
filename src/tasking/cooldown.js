@@ -19,9 +19,9 @@ export class CoolDown {
         }
     }
 
-    executeAsync(callbackAsync) {
+    async executeAsync(callbackAsync) {
         if (this._getIsCool()) {
-            return callbackAsync()
+            await callbackAsync()
         }
     }
 }
