@@ -94,13 +94,17 @@ program
                 )
             } catch (error) {
                 logger.error(`task ${task.taskId} failed, error:${error}`)
-                // mark as failed
-                await socket.setResultAsync({
-                    slaveName,
-                    taskId: task.taskId,
-                    status: 'failed',
-                    message: error.message
-                })
+                // mark as failed if it can
+                try {
+                    await socket.setResultAsync({
+                        slaveName,
+                        taskId: task.taskId,
+                        status: 'failed',
+                        message: error.message
+                    })
+                } catch (error) {
+                    logger.error(`failed to report task ${task.taskId} failure, error:${error}`)
+                }
 
                 return
             }
