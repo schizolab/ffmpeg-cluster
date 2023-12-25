@@ -45,7 +45,7 @@ async function downloadFileAsync({ downloadURL, downloadPath }, progressCallback
         writeStream.on('error', reject)
         // on write stream progress
         downloadStream.on('downloadProgress', ({ transferred, total, percent }) => {
-            cooledReportAsync({ action: 'downloading file', progressPercentage: percent })
+            cooledReportAsync({ action: 'downloading file', progressPercentage: percent * 100 })
         })
         downloadStream.on('error', reject)
     })
@@ -151,7 +151,7 @@ async function uploadFileAsync({ videoOutputPath, uploadURL }, progressCallbackA
         uploadStream.on('error', reject)
         // on read stream progress
         uploadStream.on('uploadProgress', ({ transferred, total, percent }) => {
-            cooledReportAsync({ action: 'uploading file', progressPercentage: percent })
+            cooledReportAsync({ action: 'uploading file', progressPercentage: percent * 100 })
         })
     })
 
