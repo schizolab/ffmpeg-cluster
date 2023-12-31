@@ -1,6 +1,8 @@
 import { promisify } from 'util';
 import { exec } from 'child_process';
 
+import { getFFMPEGCommand } from './commands.js';
+
 const CPU_USED = 1;
 
 export async function transcodeVideoAsync({
@@ -9,20 +11,14 @@ export async function transcodeVideoAsync({
     video: { width, height, quality, isDeNoise },
     audio: { sampleRate },
 }, progressCallbackAsync) {
-    const ffmpegCPU = `ffmpeg -i ${inputFilePath} \
-        -c:v libvpx-vp9 \
-        -c:a libopus \
-        -cpu-used -${CPU_USED} \
-        -b:v 0 ${isDeNoise ? '-vf "hqdn3d=4:3:6:4" ' : ''}\
-        -crf ${quality} \
-        -q:v 2 \
-        -auto-alt-ref 1 \
-        -lag-in-frames 25 \
-        -vf scale=${width}:-2 \
-        -progress pipe:1 \
-        -hide_banner \
-        -loglevel error \
-        ${outputFilePath}`;
+    const ffmpegCPU = getFFMPEGCommand({
+        inputFilePath,
+        CPU_USED,
+        isDeNoise,
+        quality,
+        width,
+        outputFilePath
+    });
 
     const ffmpegNvidia = `
     `
