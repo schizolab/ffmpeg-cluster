@@ -6,6 +6,9 @@ import got from 'got'
 import { CoolDown } from './cooldown.js'
 import { ffprobeAsync, transcodeVideoAsync } from '../ffmpeg/transcode.js'
 import { getOutputExtension } from '../ffmpeg/commands.js'
+import pLimit from 'p-limit';
+
+const downloadLimit = pLimit(2); // download 2 at a time, gonna max out the LAN anyways,
 
 const logger = log4js.getLogger('task')
 
@@ -191,7 +194,9 @@ export async function processTask({ task, slaveName }, progressCallbackAsync) {
     const videoOutputPath = await prepFilePath('./temp/videos/transcodes', task.taskId + extension)
 
     try {
-        await downloadFileAsync({ downloadURL: task.downloadURL, downloadPath }, progressCallbackAsync)
+        await downloadLimit(async () => {
+            await downloadFileAsync({ downloadURL: task.downloadURL, downloadPath }, progressCallbackAsync)
+        })
 
         await transcodeFileAsync({ downloadPath, videoOutputPath }, progressCallbackAsync)
 
