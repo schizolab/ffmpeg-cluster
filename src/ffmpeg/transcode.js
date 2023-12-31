@@ -17,9 +17,6 @@ export async function transcodeVideoAsync({
         outputFilePath
     });
 
-    const ffmpegNvidia = `
-    `
-
     // get video length
     const ffprobed = await ffprobeAsync(inputFilePath)
 
