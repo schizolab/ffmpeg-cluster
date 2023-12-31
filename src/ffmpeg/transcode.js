@@ -9,7 +9,7 @@ export async function transcodeVideoAsync({
     video: { width, height, quality, isDeNoise },
     audio: { sampleRate },
 }, progressCallbackAsync) {
-    const ffmpegCPU = getFFMPEGCommand({
+    const ffmpegCommand = getFFMPEGCommand({
         inputFilePath,
         isDeNoise,
         quality,
@@ -21,7 +21,7 @@ export async function transcodeVideoAsync({
     const ffprobed = await ffprobeAsync(inputFilePath)
 
     return new Promise(async (resolve, reject) => {
-        const ffmpegProcess = exec(ffmpegCPU);
+        const ffmpegProcess = exec(ffmpegCommand);
 
         ffmpegProcess.stdout.on('data', (data) => {
             const progress = parseProgress(data);
