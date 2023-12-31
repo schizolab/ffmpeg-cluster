@@ -5,6 +5,7 @@ import path from 'path'
 import got from 'got'
 import { CoolDown } from './cooldown.js'
 import { ffprobeAsync, transcodeVideoAsync } from '../ffmpeg/transcode.js'
+import { getOutputExtension } from '../ffmpeg/commands.js'
 
 const logger = log4js.getLogger('task')
 
@@ -183,7 +184,11 @@ async function deleteFileAsync(filePath) {
 
 export async function processTask({ task, slaveName }, progressCallbackAsync) {
     const downloadPath = await prepFilePath('./temp/videos/downloads', `${task.taskId}.tmp`)
-    const videoOutputPath = await prepFilePath('./temp/videos/transcodes', `${task.taskId}.webm`)
+
+    // prepare output file path
+    // get the file extension
+    const extension = getOutputExtension()
+    const videoOutputPath = await prepFilePath('./temp/videos/transcodes', task.taskId + extension)
 
     try {
         await downloadFileAsync({ downloadURL: task.downloadURL, downloadPath }, progressCallbackAsync)
@@ -191,7 +196,6 @@ export async function processTask({ task, slaveName }, progressCallbackAsync) {
         await transcodeFileAsync({ downloadPath, videoOutputPath }, progressCallbackAsync)
 
         await uploadFileAsync({ videoOutputPath, uploadURL: task.uploadURL }, progressCallbackAsync)
-
     } catch (error) {
         throw error
     } finally {
