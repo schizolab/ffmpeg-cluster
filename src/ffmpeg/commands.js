@@ -1,5 +1,6 @@
+const CPU_USED = 1
 
-export function getFFMPEGCommand({ inputFilePath, CPU_USED, isDeNoise, quality, width, outputFilePath }) {
+export function getFFMPEGCommand({ inputFilePath, isDeNoise, quality, width, outputFilePath }) {
     const command = `ffmpeg -i ${inputFilePath} \
     -c:v libvpx-vp9 \
     -c:a libopus \

@@ -3,8 +3,6 @@ import { exec } from 'child_process';
 
 import { getFFMPEGCommand } from './commands.js';
 
-const CPU_USED = 1;
-
 export async function transcodeVideoAsync({
     inputFilePath,
     outputFilePath,
@@ -13,7 +11,6 @@ export async function transcodeVideoAsync({
 }, progressCallbackAsync) {
     const ffmpegCPU = getFFMPEGCommand({
         inputFilePath,
-        CPU_USED,
         isDeNoise,
         quality,
         width,
