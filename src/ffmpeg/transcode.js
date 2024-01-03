@@ -39,13 +39,14 @@ export async function transcodeVideoAsync({
             reject(new Error(error));
         });
 
-        ffmpegProcess.on('exit', (code) => {
+        ffmpegProcess.on('exit', (code, signal) => {
             if (code === 0) {
                 resolve({
                     outputFilePath
                 });
             } else {
-                reject(new Error(`FFmpeg process exited with code ${code}`));
+                ffmpegProcess.kill(); // kill the process if it fails, sometimes it's still running
+                reject(new Error(`FFmpeg process exited with code ${code}, signal ${signal}`));
             }
         });
     });
