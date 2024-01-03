@@ -84,6 +84,7 @@ program
                     },
                     // progress callback
                     async ({ action, progressPercentage, fps }) => {
+                        logger.info(`task ${task.taskId} progress: ${action} ${progressPercentage}% ${fps ? `${fps}fps` : ''}`)
                         await socket.setProgressAsync({
                             slaveName,
                             taskId: task.taskId,
