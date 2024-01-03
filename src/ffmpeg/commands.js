@@ -36,6 +36,22 @@ export function getFFMPEGCommand({ inputFilePath, isDeNoise, quality, width, out
         case 'nvenc':
 
             break;
+        case 'av1':
+            return `ffmpeg -i ${inputFilePath} \
+                -c:v libsvtav1 \
+                -preset 8 \
+                -c:a libopus \
+                -b:v 0 ${isDeNoise ? '-vf "hqdn3d=4:3:6:4" ' : ''}\
+                -crf 50 \
+                -q:v 2 \
+                -auto-alt-ref 1 \
+                -vf scale=${width}:-2 \
+                -progress pipe:1 \
+                -hide_banner \
+                -loglevel error \
+                2>/dev/null \
+                ${outputFilePath}`
+            break;
         default:
             return `ffmpeg -i ${inputFilePath} \
                     -c:v libvpx-vp9 \
