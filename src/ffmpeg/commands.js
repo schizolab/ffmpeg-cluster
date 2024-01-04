@@ -53,11 +53,13 @@ export function getFFMPEGCommand({ inputFilePath, isDeNoise, quality, width, out
                 ${outputFilePath}`
             break;
         default:
+            const _isDenoise = width < 800 ? false : isDeNoise
+
             return `ffmpeg -i ${inputFilePath} \
                     -c:v libvpx-vp9 \
                     -c:a libopus \
                     -cpu-used -${CPU_USED} \
-                    -b:v 0 ${isDeNoise ? '-vf "hqdn3d=1:1:4:4" ' : ''}\
+                    -b:v 0 ${_isDenoise ? '-vf "hqdn3d=0:0:4:4" ' : ''}\
                     -crf ${quality} \
                     -q:v 2 \
                     -auto-alt-ref 1 \
