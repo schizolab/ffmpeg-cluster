@@ -35,10 +35,10 @@ export async function transcodeVideoAsync({
             })
         });
 
-        ffmpegProcess.stderr.on('data', (error) => {
-            ffmpegProcess.kill(); // is this why it's still running?
-            reject(new Error(error));
-        });
+        // ffmpegProcess.stderr.on('data', (error) => {
+        //     ffmpegProcess.kill(); // is this why it's still running?
+        //     reject(new Error(error));
+        // });
 
         ffmpegProcess.on('exit', (code, signal) => {
             if (code === 0) {
