@@ -55,10 +55,6 @@ export async function transcodeVideoAsync({
                 reject(new Error(`FFmpeg process exited with code ${code}, signal ${signal}`));
             }
         });
-
-        setTimeout(() => {
-            ffmpegProcess.kill()
-        }, 1000)
     });
 }
 
