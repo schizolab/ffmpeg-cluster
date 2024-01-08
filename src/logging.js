@@ -2,33 +2,33 @@ import log4js from "log4js";
 
 log4js.configure({
     appenders: {
-        task: {
-            type: 'file',
-            filename: './logs/task.log',
+        console: {
+            type: 'console'
         },
-        debug: {
+        file: {
             type: 'file',
             filename: './logs/debug.log'
-        },
-        ui: {
-            type: 'console'
         }
     },
     categories: {
         default: {
-            appenders: ['ui'],
+            appenders: ['console'],
             level: 'trace'
         },
         rest: {
-            appenders: ['debug', 'ui'],
+            appenders: ['console', 'file'],
             level: 'info'
         },
         socket: {
-            appenders: ['ui'],
+            appenders: ['console'],
             level: 'trace'
         },
         task: {
-            appenders: ['task', 'debug', 'ui'],
+            appenders: ['console', 'file'],
+            level: 'info'
+        },
+        ffmpeg: {
+            appenders: ['console', 'file'],
             level: 'info'
         }
     }
