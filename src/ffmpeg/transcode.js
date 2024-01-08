@@ -1,5 +1,8 @@
+import log4js from '../logging.js'
+const logger = log4js.getLogger('ffmpeg')
+
 import { promisify } from 'util';
-import { exec } from 'child_process';
+import { spawn } from 'child_process';
 
 import { getFFMPEGCommand } from './commands.js';
 
@@ -21,7 +24,10 @@ export async function transcodeVideoAsync({
     const ffprobed = await ffprobeAsync(inputFilePath)
 
     return new Promise(async (resolve, reject) => {
-        const ffmpegProcess = exec(ffmpegCommand);
+        let [program, ...args] = ffmpegCommand.split(' ')
+        args = args.filter(a => a.trim() !== '')
+
+        const ffmpegProcess = spawn(program, args);
 
         ffmpegProcess.stdout.on('data', (data) => {
             const progress = parseProgress(data);
@@ -35,10 +41,9 @@ export async function transcodeVideoAsync({
             })
         });
 
-        // ffmpegProcess.stderr.on('data', (error) => {
-        //     ffmpegProcess.kill(); // is this why it's still running?
-        //     reject(new Error(error));
-        // });
+        ffmpegProcess.stderr.on('data', (error) => {
+            logger.info(error.toString('utf-8'))
+        });
 
         ffmpegProcess.on('exit', (code, signal) => {
             if (code === 0) {
@@ -50,11 +55,15 @@ export async function transcodeVideoAsync({
                 reject(new Error(`FFmpeg process exited with code ${code}, signal ${signal}`));
             }
         });
+
+        setTimeout(() => {
+            ffmpegProcess.kill()
+        }, 1000)
     });
 }
 
 function parseProgress(data) {
-    const lines = data.trim().split('\n');
+    const lines = data.toString('utf-8').trim().split('\n');
     const progress = {};
 
     for (const line of lines) {
@@ -71,7 +80,8 @@ function parseProgress(data) {
 
 export async function ffprobeAsync(file) {
     return new Promise((resolve, reject) => {
-        const ffprobeProcess = exec(`ffprobe -v quiet -print_format json -show_format -show_streams ${file}`);
+        const [program, ...args] = `ffprobe -v quiet -print_format json -show_format -show_streams ${file}`.split(' ')
+        const ffprobeProcess = spawn(program, args);
 
         let output = '';
 
