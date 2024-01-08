@@ -12,7 +12,7 @@ const downloadLimit = pLimit(2); // download 2 at a time, gonna max out the LAN 
 
 const logger = log4js.getLogger('task')
 
-const REPORT_COOLDOWN_MS = 200
+const REPORT_COOLDOWN_MS = 1000
 
 async function prepFilePath(folder, fileName) {
     const filePath = path.join(folder, fileName)
