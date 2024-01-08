@@ -49,7 +49,6 @@ export function getFFMPEGCommand({ inputFilePath, isDeNoise, quality, width, out
                 -progress pipe:1 \
                 -hide_banner \
                 -loglevel error \
-                2>/dev/null \
                 ${outputFilePath}`
             break;
         default:
