@@ -17,20 +17,22 @@ export class IterableTask {
     }
 
     async next() {
-        try {
-            const task = await getTaskAsync(this.masterAddress, { slaveName: this.slaveName })
+        const RETRY_INTERVAL_S = 10
+        while (true) {
+            try {
+                const task = await getTaskAsync(this.masterAddress, { slaveName: this.slaveName })
 
-            this.taskCount++
+                this.taskCount++
 
-            return {
-                value: task,
-                done: false
-            }
-        } catch (error) {
-            logger.error(`failed to get task from master, error:${error}`)
-            return {
-                value: undefined,
-                done: true
+                return {
+                    value: task,
+                    done: false
+                }
+            } catch (error) {
+                logger.info(`failed to get task from master, error:${error}, retrying in ${RETRY_INTERVAL_S} seconds`)
+
+                // wait 5 seconds before retrying
+                await new Promise((resolve) => setTimeout(resolve, RETRY_INTERVAL_S * 1000))
             }
         }
     }
