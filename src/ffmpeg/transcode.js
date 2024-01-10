@@ -82,7 +82,7 @@ export async function ffprobeAsync(file) {
         let output = '';
 
         ffprobeProcess.stdout.on('data', (data) => {
-            output += data;
+            output += data.toString('utf-8').replace(/\n/g, '\n');
         });
 
         ffprobeProcess.stderr.on('data', (error) => {
@@ -95,7 +95,7 @@ export async function ffprobeAsync(file) {
                     const result = JSON.parse(output);
                     resolve(parseFFProbe(result));
                 } catch (error) {
-                    reject(new Error('Failed to parse ffprobe output'));
+                    reject(new Error(`Failed to parse ffprobe output: ${error.message}`));
                 }
             } else {
                 reject(new Error(`ffprobe process exited with code ${code}`));
@@ -108,13 +108,13 @@ function parseFFProbe(ffprobe) {
     return {
         video: {
             duration: Number.parseFloat(ffprobe.format.duration),
-            width: Number.parseInt(ffprobe.streams[0].width),
-            height: Number.parseInt(ffprobe.streams[0].height),
+            width: ffprobe.streams[0].width,
+            height: ffprobe.streams[0].height,
             fps: Number.parseFloat(ffprobe.streams[0].r_frame_rate.split('/')[0]),
             bitRate: Number.parseInt(ffprobe.format.bit_rate),
         },
         audio: {
-            channels: Number.parseInt(ffprobe.streams[1].channels),
+            channels: ffprobe.streams[1].channels,
             sampleRate: Number.parseInt(ffprobe.streams[1].sample_rate),
         }
     }
