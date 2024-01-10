@@ -12,6 +12,10 @@ export function getOutputExtension() {
 }
 
 export function getFFMPEGCommand({ inputFilePath, isDeNoise, quality, width, outputFilePath }) {
+    // round width to a even number by adding 1
+    // ffmpeg error: Svt[error]: Error Instance 1: Source Width must be even for YUV_420 colorspace
+    const evenWidth = width % 2 === 0 ? width : width + 1
+
     switch (process.env.HW_ENCODER) {
         // appleshit
         // I have a Macbook Air M2 as a normie machine
@@ -27,7 +31,7 @@ export function getFFMPEGCommand({ inputFilePath, isDeNoise, quality, width, out
             -q:v 2 \
             -auto-alt-ref 1 \
             -lag-in-frames 25 \
-            -vf scale=${width}:-2 \
+            -vf scale=${evenWidth}:-2 \
             -progress pipe:1 \
             -hide_banner \
             -loglevel error \
@@ -45,14 +49,14 @@ export function getFFMPEGCommand({ inputFilePath, isDeNoise, quality, width, out
                 -crf 50 \
                 -q:v 2 \
                 -auto-alt-ref 1 \
-                -vf scale=${width}:-2 \
+                -vf scale=${evenWidth}:-2 \
                 -progress pipe:1 \
                 -hide_banner \
                 -loglevel error \
                 ${outputFilePath}`
             break;
         default:
-            const _isDenoise = width < 800 ? false : isDeNoise
+            const _isDenoise = evenWidth < 800 ? false : isDeNoise
 
             return `ffmpeg -i ${inputFilePath} \
                     -c:v libvpx-vp9 \
@@ -63,7 +67,7 @@ export function getFFMPEGCommand({ inputFilePath, isDeNoise, quality, width, out
                     -q:v 2 \
                     -auto-alt-ref 1 \
                     -lag-in-frames 25 \
-                    -vf scale=${width}:-2 \
+                    -vf scale=${evenWidth}:-2 \
                     -progress pipe:1 \
                     -hide_banner \
                     -loglevel error \
